@@ -1,34 +1,3 @@
-# teenytinycompiler
+# boostrap Teeny Tiny compiler
 
-This is a small compiler to demonstrate how compilers work to my students. It compiles our own dialect of BASIC to C, while being written in Python.
-
-Read the tutorial: [Let's make a Teeny Tiny compiler, part 1](https://austinhenley.com/blog/teenytinycompiler1.html) as well as [part 2](https://austinhenley.com/blog/teenytinycompiler2.html) and [part 3](https://austinhenley.com/blog/teenytinycompiler3.html)
-
-The code is split into folders (part1, part2, part3) that correspond with the complete code from the parts of the tutorial. See part3 for the finished compiler.
-
-It supports:
-  - Numerical variables
-  - Basic arithmetic
-  - If statements
-  - While loops
-  - Print text and numbers
-  - Input numbers
-  - Labels and goto
-  - Comments
-
-Example code:
-```
-PRINT "How many fibonacci numbers do you want?"
-INPUT nums
-PRINT ""
-
-LET a = 0
-LET b = 1
-WHILE nums > 0 REPEAT
-    PRINT a
-    LET c = a + b
-    LET a = b
-    LET b = c
-    LET nums = nums - 1
-ENDWHILE
-```
+I went through this [fantastic tutorial](https://austinhenley.com/blog/teenytinycompiler1.html) on how to make a BASIC-to-C compiler in Python. Now I want to extend it by bootstrapping it. Since the version of BASIC used in the original tutorial was simplified, I will start by extending the language so that I can write the compiler. After that I might make a subset of the language that I can use as the target so that I can have every part of the project use this version of BASIC.
