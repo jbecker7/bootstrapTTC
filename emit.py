@@ -13,6 +13,12 @@ class Emitter:
     def headerLine(self, code):
         self.header += code + "\n"
 
+    def startStruct(self, name):
+        self.emitLine(f"struct {name} {{")
+
+    def endStruct(self):
+        self.emitLine("};")
+
     def writeFile(self):
         with open(self.fullPath, "w") as outputFile:
             outputFile.write(self.header + self.code)

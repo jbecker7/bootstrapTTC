@@ -22,6 +22,8 @@ class TokenType(enum.Enum):
     NUMBER = 1
     IDENT = 2
     STRING = 3
+
+    # Control Structures
     LABEL = 101
     GOTO = 102
     PRINT = 103
@@ -33,6 +35,12 @@ class TokenType(enum.Enum):
     WHILE = 109
     REPEAT = 110
     ENDWHILE = 111
+    # New Keywords
+    CLASS = 112
+    VARIABLE = 113
+    ENDCLASS = 114
+    NEW = 115
+    # Operators
     EQ = 201
     PLUS = 202
     MINUS = 203
@@ -156,12 +164,16 @@ class Lexer:
             startPos = self.curPos
             while self.peek().isalnum():
                 self.nextChar()
-            tokText = self.source[startPos : self.curPos + 1]
+            tokText = self.source[startPos : self.curPos + 1].upper()
             keyword = Token.checkIfKeyword(tokText)
-            if keyword == None:
-                token = Token(tokText, TokenType.IDENT)
+            if keyword is None:
+                token = Token(
+                    tokText, TokenType.IDENT
+                )  # Not a keyword: it's an identifier
             else:
-                token = Token(tokText, keyword)
+                token = Token(
+                    tokText, keyword
+                )  # It's a keyword: create the appropriate token
 
         elif self.curChar == "\n":
             token = Token(self.curChar, TokenType.NEWLINE)
@@ -169,5 +181,6 @@ class Lexer:
             token = Token("", TokenType.EOF)
         else:
             self.abort("Unknown token: " + self.curChar)
+        print(f"Generated Token: {token.text}, Type: {token.kind}")
         self.nextChar()
         return token

@@ -17,12 +17,17 @@ class Parser:
         self.nextToken()
 
     def checkToken(self, kind):
-        return kind == self.curToken.kind
+        result = kind == self.curToken.kind
+        print(
+            f"Checking Token: Expected {kind}, got {self.curToken.kind}, Result: {result}"
+        )
+        return result
 
     def checkPeek(self, kind):
         return kind == self.peekToken.kind
 
     def match(self, kind):
+        print(f"Attempting to match: {kind} with Current Token: {self.curToken.kind}")
         if not self.checkToken(kind):
             self.abort("Expected " + kind.name + ", got " + self.curToken.kind.name)
         self.nextToken()
@@ -63,8 +68,10 @@ class Parser:
                 self.abort("Attempting to GOTO to undeclared label: " + label)
 
     def statement(self):
-
         # "PRINT" (expression | string)
+        print(
+            f"Handling statement for Token: {self.curToken.text}, Type: {self.curToken.kind}"
+        )
         if self.checkToken(TokenType.PRINT):
             self.nextToken()
 
@@ -159,6 +166,9 @@ class Parser:
             self.emitter.emitLine("}")
             self.match(TokenType.IDENT)
 
+        elif self.checkToken(TokenType.CLASS):
+            self.parse_class()
+
         else:
             self.abort(
                 "Invalid statement at "
@@ -226,3 +236,32 @@ class Parser:
         self.match(TokenType.NEWLINE)
         while self.checkToken(TokenType.NEWLINE):
             self.nextToken()
+
+    def parse_class(self):
+        self.match(TokenType.CLASS)  # Already matched CLASS and moved next
+        class_name = self.curToken.text
+        self.nextToken()  # Move past the class name identifier
+        self.emitter.startStruct(class_name)  # Start struct definition
+
+        while not self.checkToken(TokenType.ENDCLASS):
+            if self.checkToken(TokenType.NEWLINE):
+                self.nextToken()  # Skip newlines within class definitions
+                continue
+            elif self.checkToken(TokenType.VARIABLE):
+                self.nextToken()  # Move past the VARIABLE keyword
+                if not self.checkToken(TokenType.IDENT):
+                    self.abort("Variable name expected after VARIABLE keyword")
+                var_name = self.curToken.text
+                self.nextToken()  # Move past the variable name
+                self.emitter.emitLine(f"    float {var_name};")  # Emit struct member
+            else:
+                self.abort("Only variable declarations are allowed inside classes")
+
+        self.match(TokenType.ENDCLASS)
+        self.emitter.endStruct()  # Close struct definition
+
+    def parse_variable_declaration(self):
+        self.match(TokenType.VARIABLE)
+        var_name = self.curToken.text
+        self.match(TokenType.IDENT)
+        self.register_variable(var_name)
